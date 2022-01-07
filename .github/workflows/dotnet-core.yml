@@ -20,7 +20,7 @@ jobs:
         dotnet-version: 6.0.x
     - name: Setup Scoop
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
       run: |
         try {
           git config --global user.email "ninja@thesharp.ninja"
