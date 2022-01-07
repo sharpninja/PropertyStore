@@ -48,7 +48,23 @@ jobs:
           }        
           GitVersion
           
-          dotnet nuget add source --username sharpninja --password $env:GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/sharpninja/index.json"
+          $nugetConfig = @('<?xml version="1.0" encoding="utf-8"?>',
+            '<configuration>',
+                '<packageSources>',
+                    '<clear />',
+                    '<add key="github" value="https://nuget.pkg.github.com/OWNER/index.json" />',
+                '</packageSources>',
+                '<packageSourceCredentials>',
+                    '<github>',
+                        '<add key="Username" value="sharpninja" />',
+                        ('<add key="ClearTextPassword" value="'+ $env:PUBLISH_TOKEN +'" />'),
+                    '</github>',
+                '</packageSourceCredentials>',
+            '</configuration>')
+            
+          # $nugetConfig | Out-File nuget.config
+          
+          # dotnet nuget add source --username sharpninja --password $env:GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/sharpninja/index.json"
         } catch {
           $e=$_
           Write-Error "Error initializing GitVersion."
@@ -71,7 +87,7 @@ jobs:
         # user account
         gh-user: sharpninja
         # access token
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PACKAGES_TOKEN }}
         # skip publishing duplicated package(s)
         skip-duplicate: true
     - name: Test
