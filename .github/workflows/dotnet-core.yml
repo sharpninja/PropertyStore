@@ -10,7 +10,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -18,9 +18,49 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+    - name: Setup Scoop
+      env:
+        GITHUB_TOKEN: ${{ secrets:GITHUB_TOKEN }}
+      run: |
+        iwr -useb get.scoop.sh | iex
+        scoop install gitversion
+        
+        if(-not (Test-Path GitVersion.yml)) {
+          $yml = @(
+            'assembly-versioning-scheme: MajorMinorPatch',
+            'mode: ContinuousDelivery',
+            'next-version: 1.2.0',
+            'branches: {}',
+            'ignore:',
+            '  sha: []',
+            'merge-message-formats: {}'
+          )
+          
+          $yml | out-file GitVersion.yml
+          
+          git add .
+          git commit -m "Added gitversion config."
+          git push "https://sharpninja:${env:GITHUB_TOKEN}@github.com/sharpninja/PropertyStore.git"
+        }        
+        GitVersion
+        
     - name: Install dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
+    - name: GitHub Packages
+#       if: ${{ github.event_name != 'release' }}
+      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
+      with:
+        # Path of NuPkg
+        nupkg-path: ${{ github.workspace }}bin/Release/Securify.PropertyStore.${{ env.GitVersion_SemVer }}.nupkg
+        # package repository owner
+        repo-owner: sharpninja
+        # user account
+        gh-user: sharpninja
+        # access token
+        token: ${{ secrets.GITHUB_TOKEN }}
+        # skip publishing duplicated package(s)
+        skip-duplicate: true
     - name: Test
       run: dotnet test --no-restore --verbosity normal
