@@ -20,7 +20,7 @@ jobs:
         dotnet-version: 6.0.x
     - name: Setup Scoop
       env:
-        GITHUB_TOKEN: ${{ secrets:GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         iwr -useb get.scoop.sh | iex
         scoop install gitversion
