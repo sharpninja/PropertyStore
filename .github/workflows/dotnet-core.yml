@@ -47,6 +47,8 @@ jobs:
             git push "https://sharpninja:${env:GITHUB_TOKEN}@github.com/sharpninja/PropertyStore.git"
           }        
           GitVersion
+          
+          dotnet nuget add source --username sharpninja --password $env:GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/sharpninja/index.json"
         } catch {
           $e=$_
           Write-Error "Error initializing GitVersion."
