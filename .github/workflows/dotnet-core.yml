@@ -63,7 +63,7 @@ jobs:
       uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
       with:
         # Path of NuPkg
-        nupkg-path: ${{ github.workspace }}bin/Release/Securify.PropertyStore.${{ env.GitVersion_SemVer }}.nupkg
+        nupkg-path: ${{ github.workspace }}/bin/Release/Securify.PropertyStore.${{ env.GitVersion_SemVer }}.nupkg
         # package repository owner
         repo-owner: sharpninja
         # user account
