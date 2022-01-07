@@ -83,7 +83,7 @@ jobs:
         # Path of NuPkg
         nupkg-path: ${{ github.workspace }}/bin/Release/Securify.PropertyStore.${{ env.GitVersion_SemVer }}.nupkg
         # package repository owner
-        repo-owner: sharpninja
+        repo-owner: sharpninja/PropertyStore
         # user account
         gh-user: sharpninja
         # access token
