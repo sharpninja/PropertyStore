@@ -22,27 +22,37 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        iwr -useb get.scoop.sh | iex
-        scoop install gitversion
-        
-        if(-not (Test-Path GitVersion.yml)) {
-          $yml = @(
-            'assembly-versioning-scheme: MajorMinorPatch',
-            'mode: ContinuousDelivery',
-            'next-version: 1.2.0',
-            'branches: {}',
-            'ignore:',
-            '  sha: []',
-            'merge-message-formats: {}'
-          )
-          
-          $yml | out-file GitVersion.yml
-          
-          git add .
-          git commit -m "Added gitversion config."
-          git push "https://sharpninja:${env:GITHUB_TOKEN}@github.com/sharpninja/PropertyStore.git"
-        }        
-        GitVersion
+        try {
+          git config --global user.email "ninja@thesharp.ninja"
+          git config --global user.name "GitHub on behalf of Sharp Ninja"
+          git fetch --unshallow
+          iwr -useb get.scoop.sh | iex
+          scoop install gitversion
+
+          if(-not (Test-Path GitVersion.yml)) {
+            $yml = @(
+              'assembly-versioning-scheme: MajorMinorPatch',
+              'mode: ContinuousDelivery',
+              'next-version: 1.2.0',
+              'branches: {}',
+              'ignore:',
+              '  sha: []',
+              'merge-message-formats: {}'
+            )
+
+            $yml | out-file GitVersion.yml
+
+            git add .
+            git commit -m "Added gitversion config."
+            git push "https://sharpninja:${env:GITHUB_TOKEN}@github.com/sharpninja/PropertyStore.git"
+          }        
+          GitVersion
+        } catch {
+          $e=$_
+          Write-Error "Error initializing GitVersion."
+          Write-Error $e
+          throw $e
+        }
         
     - name: Install dependencies
       run: dotnet restore
