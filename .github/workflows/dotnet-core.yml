@@ -13,6 +13,7 @@ jobs:
       WORKSPACE: ${{ github.workspace }}
       CSPROJ: ${{ github.workspace }}\Securify.PropertyStore.csproj
       GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+      VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ${{ secrets.PACKAGES_TOKEN }}
 
     runs-on: windows-2022
 
@@ -82,6 +83,7 @@ jobs:
         dotnet pack --configuration Release --no-build -o $out
         $pkgs=Get-ChildItem $packages -ErrorAction Stop
         if($pkgs) {
+          iex "& { $(irm https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
           $nugetConfig = @('<?xml version="1.0" encoding="utf-8"?>',
             '<configuration>',
                 '<packageSources>',
@@ -93,15 +95,15 @@ jobs:
           
           dotnet nuget add source `
             --username sharpninja `
-            --password "${env:GITHUB_TOKEN}" `
-            --store-password-in-clear-text `
             --name github "https://nuget.pkg.github.com/sharpninja/index.json" `
-            --valid-authentication-types basic `
             --configfile nuget.config
+            # --password "${env:GITHUB_TOKEN}" `
+            # --store-password-in-clear-text `
+            # --valid-authentication-types basic `
             
           get-content nuget.config
             
-          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true --verbosity detailed
+          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true
           # nuget push $pkgs.FullName -ConfigFile nuget.config -Source github -SkipDuplicate -NoSymbols -Verbosity detailed
         } else {
           throw "$pkgs return no results."
