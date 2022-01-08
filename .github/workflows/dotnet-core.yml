@@ -12,7 +12,7 @@ jobs:
     env:
       WORKSPACE: ${{ github.workspace }}
       CSPROJ: ${{ github.workspace }}\Securify.PropertyStore.csproj
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
 
     runs-on: windows-2022
 
@@ -96,6 +96,7 @@ jobs:
             --password "${env:GITHUB_TOKEN}" `
             --store-password-in-clear-text `
             --name github "https://nuget.pkg.github.com/sharpninja/index.json" `
+            --valid-authentication-types basic `
             --configfile nuget.config
             
           get-content nuget.config
