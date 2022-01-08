@@ -74,21 +74,19 @@ jobs:
         
     - name: Install dependencies
       run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: GitHub Packages
-#       if: ${{ github.event_name != 'release' }}
-      uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
+      
+    - name: Setup .NET Core @ Latest
+      uses: actions/setup-dotnet@v1
       with:
-        # Path of NuPkg
-        nupkg-path: ${{ github.workspace }}/bin/Release/Securify.PropertyStore.${{ env.GitVersion_SemVer }}.nupkg
-        # package repository owner
-        repo-owner: gatewayprogrammingschool
-        # user account
-        gh-user: sharpninja
-        # access token
-        token: ${{ secrets.PACKAGES_TOKEN }}
-        # skip publishing duplicated package(s)
-        skip-duplicate: true
+        source-url: https://nuget.pkg.github.com/sharpninja/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.PACKAGES_TOKEN}}        
+
+    - name: Build
+      run: dotnet pack --configuration Release --no-restore -o ./out
+      
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+
+    - name: Push generated package to GitHub registry
+      run: dotnet nuget push ./out/*.nupkg --skip-duplicate --no-symbols true
