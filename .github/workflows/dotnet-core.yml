@@ -82,7 +82,8 @@ jobs:
         dotnet pack --configuration Release --no-build -o $out
         $pkgs=Get-ChildItem $packages -ErrorAction Stop
         if($pkgs) {
-          $env:VSS_NUGET_EXTERNAL_FEED_ENDPOINTS="{`"endpointCredentials`": [{`"endpoint`":`"https://nuget.pkg.github.com/sharpninja/index.json`", `"username`":`"sharpninja`", `"password`":`"${env:GITHUB_TOKEN}`"}]}"
+          $endpoint="https://nuget.pkg.github.com/gatewayprogrammingschool/index.json"
+          $env:VSS_NUGET_EXTERNAL_FEED_ENDPOINTS="{`"endpointCredentials`": [{`"endpoint`":`"$endpoint`", `"username`":`"sharpninja`", `"password`":`"${env:GITHUB_TOKEN}`"}]}"
           iex "& { $(irm https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
           
           $nugetConfig = @('<?xml version="1.0" encoding="utf-8"?>',
@@ -104,7 +105,7 @@ jobs:
             
           # get-content nuget.config
             
-          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true --source "https://nuget.pkg.github.com/sharpninja/index.json"
+          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true --source $endpoint
           # nuget push $pkgs.FullName -ConfigFile nuget.config -Source github -SkipDuplicate -NoSymbols -Verbosity detailed
         } else {
           throw "$pkgs return no results."
