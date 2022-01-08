@@ -12,6 +12,7 @@ jobs:
     env:
       WORKSPACE: ${{ github.workspace }}
       CSPROJ: ${{ github.workspace }}\Securify.PropertyStore.csproj
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     runs-on: windows-latest
 
@@ -21,9 +22,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+        
     - name: Setup Scoop
-      env:
-        GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
       run: |
         if(-not (Test-Path $env:CSPROJ -ErrorAction Stop)) { throw "${env:CSPROJ} does not exist." }
         try {
@@ -62,18 +62,18 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
       
-    - name: Setup .NET Core @ Latest
-      uses: actions/setup-dotnet@v1
-      with:
-        source-url: https://nuget.pkg.github.com/sharpninja/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.PACKAGES_TOKEN}}        
+#     - name: Setup .NET Core @ Latest
+#       uses: actions/setup-dotnet@v1
+#       with:
+#         source-url: https://nuget.pkg.github.com/sharpninja/index.json
+#       env:
+#         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}        
 
     - name: Build
       run: dotnet build --configuration Release --no-restore
       
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --configuration Release --no-build --verbosity quiet
       
     - name: Push generated package to GitHub registry
       run: |
@@ -93,7 +93,7 @@ jobs:
           
           dotnet nuget add source `
             --username sharpninja `
-            --password "${env:PACKAGES_TOKEN}" `
+            --password "${env:GITHUB_TOKEN}" `
             --store-password-in-clear-text `
             --name github "https://nuget.pkg.github.com/sharpninja/index.json" `
             --configfile nuget.config
