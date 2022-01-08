@@ -95,7 +95,7 @@ jobs:
             --username sharpninja `
             --password "${env:PACKAGES_TOKEN}" `
             --store-password-in-clear-text `
-            --name github "https://nuget.pkg.github.com/sharpninja/index.json"
+            --name github "https://nuget.pkg.github.com/sharpninja/index.json" `
             --configfile nuget.config
             
           get-content nuget.config
