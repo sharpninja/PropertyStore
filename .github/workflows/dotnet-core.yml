@@ -96,10 +96,11 @@ jobs:
             --password "${env:PACKAGES_TOKEN}" `
             --store-password-in-clear-text `
             --name github "https://nuget.pkg.github.com/sharpninja/index.json"
+            --configfile nuget.config
             
           get-content nuget.config
             
-          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true
+          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true --configfile nuget.config
         } else {
           throw "$pkgs return no results."
         }
