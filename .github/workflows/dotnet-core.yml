@@ -12,7 +12,7 @@ jobs:
     env:
       WORKSPACE: ${{ github.workspace }}
       CSPROJ: ${{ github.workspace }}\Securify.PropertyStore.csproj
-      GITHUB_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
     runs-on: windows-2022
 
