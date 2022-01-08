@@ -100,7 +100,7 @@ jobs:
             
           get-content nuget.config
             
-          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true --configfile nuget.config
+          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true
         } else {
           throw "$pkgs return no results."
         }
