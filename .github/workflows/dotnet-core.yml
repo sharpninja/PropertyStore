@@ -11,7 +11,7 @@ jobs:
   build:
     env:
       WORKSPACE: ${{ github.workspace }}
-      CSPROJ: ${{ github.workspace }}/PropertyStore.csproj
+      CSPROJ: ${{ github.workspace }}\PropertyStore.csproj
 
     runs-on: windows-latest
 
