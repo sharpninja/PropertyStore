@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     env:
-      CSPROJ: ./PropertyStore/PropertyStore.csproj
+      CSPROJ: ./PropertyStore.csproj
 
     runs-on: windows-latest
 
