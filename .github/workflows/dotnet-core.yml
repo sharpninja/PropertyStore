@@ -84,30 +84,12 @@ jobs:
         $pkgs=Get-ChildItem $packages -ErrorAction Stop
         if($pkgs) {
           $endpoint="https://nuget.pkg.github.com/${env:OWNER}/index.json"
-          $env:VSS_NUGET_EXTERNAL_FEED_ENDPOINTS="{`"endpointCredentials`": [{`"endpoint`":`"$endpoint`", `"username`":`"sharpninja`", `"password`":`"${env:GITHUB_TOKEN}`"}]}"
-          iex "& { $(irm https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
-          
-          $nugetConfig = @('<?xml version="1.0" encoding="utf-8"?>',
-            '<configuration>',
-                '<packageSources>',
-                    '<clear />',
-                '</packageSources>',
-            '</configuration>')
-            
-          # $nugetConfig | Out-File nuget.config
+          # $env:VSS_NUGET_EXTERNAL_FEED_ENDPOINTS="{`"endpointCredentials`": [{`"endpoint`":`"$endpoint`", `"username`":`"sharpninja`", `"password`":`"${env:GITHUB_TOKEN}`"}]}"
+          # iex "& { $(irm https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
           
           dotnet nuget add source --name github $endpoint 
-            #`
-            # --username sharpninja `
-            # --configfile nuget.config
-            # --password "${env:GITHUB_TOKEN}" `
-            # --store-password-in-clear-text `
-            # --valid-authentication-types basic `
             
-          # get-content nuget.config
-            
-          dotnet nuget push $pkgs.FullName --skip-duplicate --no-symbols true --source github
-          # nuget push $pkgs.FullName -ConfigFile nuget.config -Source github -SkipDuplicate -NoSymbols -Verbosity detailed
+          dotnet nuget push $pkgs.FullName --api-key $env:GITHUB_TOKEN --skip-duplicate --no-symbols true --source github
         } else {
           throw "$pkgs return no results."
         }
